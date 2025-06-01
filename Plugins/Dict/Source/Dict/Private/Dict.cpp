@@ -4,6 +4,7 @@
 #include "DictStyle.h"
 #include "DictCommands.h"
 #include "LevelEditor.h"
+#include "SDictionaryWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -68,8 +69,9 @@ TSharedRef<SDockTab> FDictModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTab
 			.HAlign(HAlign_Center)
 			.VAlign(VAlign_Center)
 			[
-				SNew(STextBlock)
-				.Text(WidgetText)
+				//SNew(STextBlock)
+				//.Text(WidgetText)
+				SNew(SDictionaryWidget)
 			]
 		];
 }
