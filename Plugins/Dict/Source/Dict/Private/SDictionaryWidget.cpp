@@ -3,6 +3,8 @@
 
 #include "SDictionaryWidget.h"
 
+#include "DesktopPlatformModule.h"
+#include "IDesktopPlatform.h"
 #include "SDictionaryEntryWidget.h"
 #include "SlateOptMacros.h"
 
@@ -117,9 +119,6 @@ void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value, FStrin
 			}
 			UpdateDictionary();
 		}
-		
-		
-			
 	}
 }
 
@@ -147,8 +146,50 @@ void SDictionaryWidget::UpdateDictionary()
 FReply SDictionaryWidget::OnSaveDataClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnSaveDataCliced"));
+
+	FString SavePath = GetFilePath();
+	if (SavePath.IsEmpty())
+	{
+		return FReply::Handled();
+	}
+	FString JsonString;
+	TSharedRef<TJsonWriter<TCHAR>> Writer = TJsonWriterFactory<TCHAR>::Create(&JsonString);
+	Writer->WriteObjectStart();
+
+	for (const auto& Pair : *Dictionary)
+	{
+		Writer->WriteValue(Pair.Key, Pair.Value);
+	}
+
+	Writer->WriteObjectEnd();
+	Writer->Close();
 	
+	FFileHelper::SaveStringToFile(JsonString, *SavePath);
+	UE_LOG(LogTemp, Warning, TEXT("JSON saved to: %s"), *SavePath);
+
 	return FReply::Handled();
+}
+
+FString SDictionaryWidget::GetFilePath()
+{
+	TSharedPtr<IDesktopPlatform> DesktopPlatform = TSharedPtr<IDesktopPlatform>(FDesktopPlatformModule::Get());
+	
+	void* ParentWindowHandle = nullptr;
+	TArray<FString> OutFiles;
+	const FString DefaultPath = FPaths::ProjectSavedDir();
+	const FString FileTypeFilters = TEXT("JSON Files (*.json)|*.json|All Files (*.*)|*.*");
+
+	bool Success = DesktopPlatform->SaveFileDialog(
+		ParentWindowHandle,
+		TEXT("Save Dictionary as JSON"),
+		DefaultPath,
+		TEXT("DictionaryData.json"),
+		FileTypeFilters,
+		EFileDialogFlags::None,
+		OutFiles
+	);
+
+	return Success && OutFiles.Num() > 0 ? OutFiles[0] : TEXT("");
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

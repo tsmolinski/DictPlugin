@@ -31,4 +31,6 @@ private:
 	void UpdateDictionary();
 	
 	FReply OnSaveDataClicked();
+
+	FString GetFilePath();
 };
