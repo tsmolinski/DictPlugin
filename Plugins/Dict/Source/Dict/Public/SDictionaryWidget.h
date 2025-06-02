@@ -18,8 +18,17 @@ public:
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 
-	private:
+private:
+	TSharedPtr<TMap<FString, FString>> Dictionary;
 	TSharedPtr<SVerticalBox> DictionaryContainer;
 
 	FReply OnAddElementClicked();
+
+	void RemoveElement(FString Key);
+
+	void UpdateDictionaryEntry(FString Key, FString Value);
+
+	void UpdateDictionary();
+	
+	FReply OnSaveDataClicked();
 };

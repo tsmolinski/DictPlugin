@@ -9,6 +9,8 @@
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SDictionaryWidget::Construct(const FArguments& InArgs)
 {
+	Dictionary = MakeShared<TMap<FString, FString>>();
+	
 	ChildSlot
 	[
 		SNew(SOverlay)
@@ -35,7 +37,7 @@ void SDictionaryWidget::Construct(const FArguments& InArgs)
 				[
 					SNew(SButton)
 					.Text(FText::FromString("Save to Json"))
-					//.OnClicked(this, &SDictionaryWidget::)
+					.OnClicked(this, &SDictionaryWidget::OnSaveDataClicked)
 				]
 			]
 		]
@@ -44,12 +46,87 @@ void SDictionaryWidget::Construct(const FArguments& InArgs)
 
 FReply SDictionaryWidget::OnAddElementClicked()
 {
-	DictionaryContainer->AddSlot()
-	.AutoHeight()
-	[
-		SNew(SDictionaryEntryWidget)
-	];
+	if (!Dictionary->Contains(TEXT("")))
+	{
+		Dictionary->Add(TEXT(""),TEXT(""));
+	
+		UE_LOG(LogTemp, Warning, TEXT("OnAddElementClicked"));
+		for (const auto& Elem : *Dictionary)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+		}
+	}
+	
+		DictionaryContainer->AddSlot()
+		.AutoHeight()
+		[
+			SNew(SDictionaryEntryWidget)
+			.DictEntryKey(TEXT(""))
+			.DictEntryValue(TEXT(""))
+			.RemoveElement(TDelegate<void(FString)>::CreateSP(this, &SDictionaryWidget::RemoveElement))
+			.UpdateDictionaryEntry(TDelegate<void(FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
+		];
+	
+	return FReply::Handled();
+}
 
+void SDictionaryWidget::RemoveElement(FString Key)
+{
+	UE_LOG(LogTemp, Warning, TEXT("RemoveElement"));
+	
+	Dictionary->Remove(Key);
+	
+	UpdateDictionary();
+}
+
+void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value)
+{
+	if (Dictionary->Contains(Key))
+	{
+		(*Dictionary)[Key] = Value;
+		UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry1"));
+		for (const auto& Elem : *Dictionary)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+		}
+	}
+	else
+	{
+		Dictionary->Add(Key, Value);
+		
+		UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry2"));
+		for (const auto& Elem : *Dictionary)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+		}
+	}
+}
+
+void SDictionaryWidget::UpdateDictionary()
+{
+	DictionaryContainer->ClearChildren();
+
+	UE_LOG(LogTemp, Warning, TEXT("UpdateDictionary"));
+	for (const auto& Elem : *Dictionary)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+			
+		DictionaryContainer->AddSlot()
+		.AutoHeight()
+		[
+			SNew(SDictionaryEntryWidget)
+			.DictEntryKey(Elem.Key)
+			.DictEntryValue(Elem.Value)
+			.RemoveElement(TDelegate<void(FString)>::CreateSP(this, &SDictionaryWidget::RemoveElement))
+			.UpdateDictionaryEntry(TDelegate<void(FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
+		];
+	}
+}
+
+FReply SDictionaryWidget::OnSaveDataClicked()
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnSaveDataCliced"));
+	
 	return FReply::Handled();
 }
 
