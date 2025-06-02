@@ -15,7 +15,7 @@ public:
 	{}
 		SLATE_ARGUMENT(FString, DictEntryKey)
 		SLATE_ARGUMENT(FString, DictEntryValue)
-		SLATE_EVENT(TDelegate<void(FString, FString)>, UpdateDictionaryEntry)
+		SLATE_EVENT(TDelegate<void(FString, FString, FString)>, UpdateDictionaryEntry)
 		SLATE_EVENT(TDelegate<void(FString)>, RemoveElement)
 	SLATE_END_ARGS()
 
@@ -26,7 +26,7 @@ private:
 	FString DictEntryKey;
 	FString DictEntryValue;
 	TDelegate<void(FString)> RemoveElement;
-	TDelegate<void(FString, FString)> UpdateDictionaryEntry;
+	TDelegate<void(FString, FString, FString)> UpdateDictionaryEntry;
 
 	void OnDictKeyChanged(const FText& NewKey, ETextCommit::Type CommitType);
 	void OnDictValueChanged(const FText& NewValue, ETextCommit::Type CommitType);

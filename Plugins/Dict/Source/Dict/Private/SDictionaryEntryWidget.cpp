@@ -45,19 +45,21 @@ void SDictionaryEntryWidget::Construct(const FArguments& InArgs)
 
 void SDictionaryEntryWidget::OnDictKeyChanged(const FText& NewKey, ETextCommit::Type CommitType)
 {
+	FString OldKey = DictEntryKey;
 	DictEntryKey = NewKey.ToString();
 	if (UpdateDictionaryEntry.IsBound())
 	{
-		UpdateDictionaryEntry.Execute(DictEntryKey, DictEntryValue);
+		UpdateDictionaryEntry.Execute(DictEntryKey, DictEntryValue, OldKey);
 	}
 }
 
 void SDictionaryEntryWidget::OnDictValueChanged(const FText& NewValue, ETextCommit::Type CommitType)
 {
+	FString OldKey = DictEntryKey;
 	DictEntryValue = NewValue.ToString();
 	if (UpdateDictionaryEntry.IsBound())
 	{
-		UpdateDictionaryEntry.Execute(DictEntryKey, DictEntryValue);
+		UpdateDictionaryEntry.Execute(DictEntryKey, DictEntryValue, OldKey);
 	}
 }
 

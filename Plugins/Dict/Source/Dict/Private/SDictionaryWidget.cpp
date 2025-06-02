@@ -55,8 +55,6 @@ FReply SDictionaryWidget::OnAddElementClicked()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
 		}
-	}
-	
 		DictionaryContainer->AddSlot()
 		.AutoHeight()
 		[
@@ -64,8 +62,11 @@ FReply SDictionaryWidget::OnAddElementClicked()
 			.DictEntryKey(TEXT(""))
 			.DictEntryValue(TEXT(""))
 			.RemoveElement(TDelegate<void(FString)>::CreateSP(this, &SDictionaryWidget::RemoveElement))
-			.UpdateDictionaryEntry(TDelegate<void(FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
+			.UpdateDictionaryEntry(TDelegate<void(FString, FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
 		];
+	}
+	
+	
 	
 	return FReply::Handled();
 }
@@ -79,11 +80,12 @@ void SDictionaryWidget::RemoveElement(FString Key)
 	UpdateDictionary();
 }
 
-void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value)
+void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value, FString OldKey)
 {
-	if (Dictionary->Contains(Key))
+	if (Key == OldKey)
 	{
 		(*Dictionary)[Key] = Value;
+		//
 		UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry1"));
 		for (const auto& Elem : *Dictionary)
 		{
@@ -92,13 +94,32 @@ void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value)
 	}
 	else
 	{
-		Dictionary->Add(Key, Value);
-		
-		UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry2"));
-		for (const auto& Elem : *Dictionary)
+		if (!Dictionary->Contains(Key))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+			FString TempValue = (*Dictionary)[OldKey];
+			Dictionary->Remove(OldKey);
+			Dictionary->Add(Key, Value);
+			UE_LOG(LogTemp, Warning, TEXT("Updated Key: %s -> %s, Value: %s"), *OldKey, *Key, *Value);
+			(*Dictionary)[Key] = Value;
+			//
+			UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry2"));
+			for (const auto& Elem : *Dictionary)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("This Key already exists!"));
+			for (const auto& Elem : *Dictionary)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
+			}
+			UpdateDictionary();
+		}
+		
+		
+			
 	}
 }
 
@@ -118,7 +139,7 @@ void SDictionaryWidget::UpdateDictionary()
 			.DictEntryKey(Elem.Key)
 			.DictEntryValue(Elem.Value)
 			.RemoveElement(TDelegate<void(FString)>::CreateSP(this, &SDictionaryWidget::RemoveElement))
-			.UpdateDictionaryEntry(TDelegate<void(FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
+			.UpdateDictionaryEntry(TDelegate<void(FString, FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
 		];
 	}
 }

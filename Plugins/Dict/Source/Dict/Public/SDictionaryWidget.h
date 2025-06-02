@@ -26,7 +26,7 @@ private:
 
 	void RemoveElement(FString Key);
 
-	void UpdateDictionaryEntry(FString Key, FString Value);
+	void UpdateDictionaryEntry(FString Key, FString Value, FString OldKey);
 
 	void UpdateDictionary();
 	
