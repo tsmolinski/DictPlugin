@@ -72,8 +72,6 @@ FReply SDictionaryWidget::OnAddElementClicked()
 
 void SDictionaryWidget::RemoveElement(FString Key)
 {
-	UE_LOG(LogTemp, Warning, TEXT("RemoveElement"));
-	
 	Dictionary->Remove(Key);
 	
 	UpdateDictionary();
