@@ -17,27 +17,42 @@ void SDictionaryEntryWidget::Construct(const FArguments& InArgs)
 			SNew(SOverlay)
 			+ SOverlay::Slot()
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.FillWidth(1.0f)
+				SNew(SBorder)
+				.BorderBackgroundColor(FLinearColor::Gray)
 				[
-					SNew(SEditableText)
-					.Text(FText::FromString(DictEntryKey))
-					.OnTextCommitted(this, &SDictionaryEntryWidget::OnDictKeyChanged)
-				]
-				+ SHorizontalBox::Slot()
-				.FillWidth(1.0f)
-				[
-					SNew(SEditableText)
-					.Text(FText::FromString(DictEntryValue))
-					.OnTextCommitted(this, &SDictionaryEntryWidget::OnDictValueChanged)
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				[
-					SNew(SButton)
-					.Text(FText::FromString("Remove"))
-					.OnClicked(this, &SDictionaryEntryWidget::OnRemoveClicked)
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
+					.FillWidth(1.0f)
+					.Padding(0, 0, 2, 0)
+					[
+						SNew(SBorder)
+						.BorderBackgroundColor(FLinearColor::Gray)
+						[
+							SNew(SEditableText)
+							.Text(FText::FromString(DictEntryKey))
+							.Font(FSlateFontInfo(FSlateFontInfo(FCoreStyle::GetDefaultFont(), 10)))
+							.OnTextCommitted(this, &SDictionaryEntryWidget::OnDictKeyChanged)
+						]
+					]
+					+ SHorizontalBox::Slot()
+					.FillWidth(1.0f)
+					[
+						SNew(SBorder)
+						.BorderBackgroundColor(FLinearColor::Gray)
+						[
+							SNew(SEditableText)
+							.Text(FText::FromString(DictEntryValue))
+							.Font(FSlateFontInfo(FSlateFontInfo(FCoreStyle::GetDefaultFont(), 10)))
+							.OnTextCommitted(this, &SDictionaryEntryWidget::OnDictValueChanged)
+						]
+					]
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					[
+						SNew(SButton)
+						.Text(FText::FromString("Remove"))
+						.OnClicked(this, &SDictionaryEntryWidget::OnRemoveClicked)
+					]
 				]
 			]
 		];

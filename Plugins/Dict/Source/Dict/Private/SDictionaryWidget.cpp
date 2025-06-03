@@ -18,28 +18,32 @@ void SDictionaryWidget::Construct(const FArguments& InArgs)
 		SNew(SOverlay)
 		+ SOverlay::Slot()
 		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			.AutoHeight()
+			SNew(SBorder)
+			.BorderBackgroundColor(FLinearColor::Gray)
 			[
-				SAssignNew(DictionaryContainer, SVerticalBox)
-			]
-			
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			[
-				SNew(SHorizontalBox)
-				+SHorizontalBox::Slot()
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				.AutoHeight()
 				[
-					SNew(SButton)
-					.Text(FText::FromString("Add element"))
-					.OnClicked(this, &SDictionaryWidget::OnAddElementClicked)
+					SAssignNew(DictionaryContainer, SVerticalBox)
 				]
-				+SHorizontalBox::Slot()
+			
+				+ SVerticalBox::Slot()
+				.AutoHeight()
 				[
-					SNew(SButton)
-					.Text(FText::FromString("Save to Json"))
-					.OnClicked(this, &SDictionaryWidget::OnSaveDataClicked)
+					SNew(SHorizontalBox)
+					+SHorizontalBox::Slot()
+					[
+						SNew(SButton)
+						.Text(FText::FromString("Add element"))
+						.OnClicked(this, &SDictionaryWidget::OnAddElementClicked)
+					]
+					+SHorizontalBox::Slot()
+					[
+						SNew(SButton)
+						.Text(FText::FromString("Save to Json"))
+						.OnClicked(this, &SDictionaryWidget::OnSaveDataClicked)
+					]
 				]
 			]
 		]
@@ -51,12 +55,7 @@ FReply SDictionaryWidget::OnAddElementClicked()
 	if (!Dictionary->Contains(TEXT("")))
 	{
 		Dictionary->Add(TEXT(""),TEXT(""));
-	
-		UE_LOG(LogTemp, Warning, TEXT("OnAddElementClicked"));
-		for (const auto& Elem : *Dictionary)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
-		}
+		
 		DictionaryContainer->AddSlot()
 		.AutoHeight()
 		[
@@ -67,8 +66,6 @@ FReply SDictionaryWidget::OnAddElementClicked()
 			.UpdateDictionaryEntry(TDelegate<void(FString, FString, FString)>::CreateSP(this,&SDictionaryWidget::UpdateDictionaryEntry ))
 		];
 	}
-	
-	
 	
 	return FReply::Handled();
 }
@@ -87,12 +84,6 @@ void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value, FStrin
 	if (Key == OldKey)
 	{
 		(*Dictionary)[Key] = Value;
-		//
-		UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry1"));
-		for (const auto& Elem : *Dictionary)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
-		}
 	}
 	else
 	{
@@ -101,22 +92,10 @@ void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value, FStrin
 			FString TempValue = (*Dictionary)[OldKey];
 			Dictionary->Remove(OldKey);
 			Dictionary->Add(Key, Value);
-			UE_LOG(LogTemp, Warning, TEXT("Updated Key: %s -> %s, Value: %s"), *OldKey, *Key, *Value);
 			(*Dictionary)[Key] = Value;
-			//
-			UE_LOG(LogTemp, Warning, TEXT("UpdateDictionaryEntry2"));
-			for (const auto& Elem : *Dictionary)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
-			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("This Key already exists!"));
-			for (const auto& Elem : *Dictionary)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
-			}
 			UpdateDictionary();
 		}
 	}
@@ -125,12 +104,9 @@ void SDictionaryWidget::UpdateDictionaryEntry(FString Key, FString Value, FStrin
 void SDictionaryWidget::UpdateDictionary()
 {
 	DictionaryContainer->ClearChildren();
-
-	UE_LOG(LogTemp, Warning, TEXT("UpdateDictionary"));
+	
 	for (const auto& Elem : *Dictionary)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %s"), *Elem.Key, *Elem.Value);
-			
 		DictionaryContainer->AddSlot()
 		.AutoHeight()
 		[
@@ -145,8 +121,6 @@ void SDictionaryWidget::UpdateDictionary()
 
 FReply SDictionaryWidget::OnSaveDataClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnSaveDataCliced"));
-
 	FString SavePath = GetFilePath();
 	if (SavePath.IsEmpty())
 	{
@@ -165,7 +139,6 @@ FReply SDictionaryWidget::OnSaveDataClicked()
 	Writer->Close();
 	
 	FFileHelper::SaveStringToFile(JsonString, *SavePath);
-	UE_LOG(LogTemp, Warning, TEXT("JSON saved to: %s"), *SavePath);
 
 	return FReply::Handled();
 }
