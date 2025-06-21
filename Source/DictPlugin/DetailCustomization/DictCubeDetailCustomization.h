@@ -2,14 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#if WITH_EDITOR
+#include "Editor/DetailCustomizations/Public/DetailCustomizations.h"
+#include "Editor/PropertyEditor/Public/IDetailCustomization.h"
 
 /**
  * 
  */
-class DICTPLUGIN_API DictCubeDetailCustomization
+class FDictCubeDetailCustomization : public IDetailCustomization
 {
 public:
-	DictCubeDetailCustomization();
-	~DictCubeDetailCustomization();
+	static TSharedRef<IDetailCustomization> MakeInstance();
+
+	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailLayout) override;
 };
+
+#endif
